@@ -1,0 +1,172 @@
+import java_cup.runtime.*;
+
+action code {: SymbolTable currentEnv, env; :}
+
+terminal String ID, INTEGER;
+terminal AND, OR, NOT;
+terminal LT, LE, GT, GE, EQ, NE;
+terminal PLUS, MINUS, TIMES, SLASH;
+terminal COLON, SEMICOLON, DOT, COMMA;
+terminal LPAREN, RPAREN, LBRACK, RBRACK, LBRACE, RBRACE, ASSIGN, INPUT, OUTPUT;
+terminal CIN, CLASS, COUT, ELSE, IF, INCLUDE, INT, IOSTREAM, NAMESPACE;
+terminal PUBLIC, RETURN, STD, USING, WHILE;
+
+
+non terminal SymbolTable program;
+
+non terminal addingOperator;
+non terminal andExpression;
+non terminal argumentDeclarationList;
+non terminal argumentDeclarationListOption;
+non terminal arithmeticExpression;
+non terminal assignmentStatement;
+non terminal String classId;
+non terminal classMember;
+non terminal classSpecifier;
+non terminal compoundStatement;
+non terminal declaration;
+non terminal declarator;
+non terminal declaratorList;
+non terminal elseOption;
+non terminal expression;
+non terminal expressionList;
+non terminal expressionListOption;
+non terminal externalDefinition;
+non terminal SymbolTable externalDefinitionList;
+non terminal factor;
+non terminal functionCall;
+non terminal functionDeclaration;
+non terminal functionDefinition;
+non terminal String functionId;
+non terminal memberDeclaration;
+non terminal memberList;
+non terminal multiplyingOperator;
+non terminal object;
+non terminal String objectId;
+non terminal primaryExpression;
+non terminal relationalExpression;
+non terminal relationalOperator;
+non terminal String simpleTypeName;
+non terminal statement;
+non terminal statementList;
+non terminal statementListOption;
+non terminal subscriptDeclarationList;
+non terminal subscriptList;
+non terminal term;
+non terminal unaryOperator;
+non terminal variable;
+
+precedence left ELSE;
+
+start with program;
+
+program ::= 
+    INCLUDE IOSTREAM USING NAMESPACE STD SEMICOLON externalDefinitionList:blockEnv 
+    {: RESULT = blockEnv; :} ;
+
+externalDefinitionList ::= 
+  {:
+    env = new SymbolTable();
+  :}
+  externalDefinition 
+  {:
+    RESULT = env;
+  :}
+  | externalDefinitionList externalDefinition 
+  {:
+    RESULT = env;
+  :};
+
+externalDefinition ::= functionDefinition | declaration ;
+
+functionDeclaration ::= 
+    simpleTypeName:returnType functionId:id LPAREN argumentDeclarationListOption RPAREN 
+    {: env.enterFunction(id, env, returnType); /* ADD FUNCTION to Symbol Table */ :};
+
+functionDefinition ::=  functionDeclaration LBRACE 
+    declaratorList statementListOption RETURN expression SEMICOLON RBRACE ;
+
+declaration ::= classSpecifier SEMICOLON | declarator SEMICOLON ;
+
+simpleTypeName ::= classId:id {: RESULT = id; :} 
+                  | INT {: RESULT = "int"; :} ;
+
+declaratorList ::= declaratorList declarator SEMICOLON | ;
+
+declarator ::= simpleTypeName:type objectId:id subscriptDeclarationList {: env.enterVariable(id, type); :};
+
+subscriptDeclarationList ::= subscriptDeclarationList LBRACK INTEGER RBRACK | ;
+
+argumentDeclarationListOption ::= argumentDeclarationList | ;
+
+argumentDeclarationList ::= argumentDeclarationList COMMA declarator
+  | declarator ;
+
+classSpecifier ::= CLASS classId:id LBRACE RBRACE {: env.enterClass(id); :}
+  | CLASS classId:id LBRACE PUBLIC COLON memberList RBRACE{: env.enterClass(id); :};
+  
+
+memberList ::= memberList memberDeclaration | memberDeclaration ;
+
+memberDeclaration ::= declarator SEMICOLON | functionDefinition ;
+
+statement ::= compoundStatement 
+  | assignmentStatement SEMICOLON 
+  | CIN INPUT variable SEMICOLON
+  | COUT OUTPUT expression SEMICOLON
+  | IF LPAREN expression RPAREN statement elseOption
+  | WHILE LPAREN expression RPAREN statement ;
+
+compoundStatement ::= LBRACE statementList RBRACE ;
+
+statementListOption ::= statementList | ;
+
+statementList ::= statementList statement | statement ;
+
+assignmentStatement ::= variable ASSIGN expression ;
+
+elseOption ::= ELSE statement | ;
+
+expression ::= expression OR andExpression | andExpression ;
+
+andExpression ::= andExpression AND relationalExpression
+  | relationalExpression ;
+
+relationalExpression ::= 
+    relationalExpression relationalOperator arithmeticExpression
+  | arithmeticExpression ;
+
+relationalOperator ::= LT | LE | GT | GE | EQ | NE ;
+
+arithmeticExpression ::= term | arithmeticExpression addingOperator term ;
+
+addingOperator ::= PLUS | MINUS ;
+
+term ::= factor | term multiplyingOperator factor ;
+
+multiplyingOperator ::= TIMES | SLASH ;
+
+factor ::= primaryExpression | unaryOperator factor ;
+
+unaryOperator ::= addingOperator | NOT ;
+
+primaryExpression ::= variable | INTEGER | LPAREN expression RPAREN ;
+
+variable ::= classMember | variable DOT classMember ;
+
+classMember ::= objectId subscriptList | functionCall ;
+
+subscriptList ::= subscriptList LBRACK expression RBRACK | ;
+
+functionCall ::= functionId LPAREN expressionListOption RPAREN 
+  | object DOT functionId LPAREN expressionListOption RPAREN ; 
+
+expressionListOption ::= expressionList | ;
+
+expressionList ::= expressionList COMMA expression | expression ;
+
+classId ::= ID:id {: RESULT = id; :};
+
+objectId ::= ID:id {: RESULT = id; :};
+
+functionId ::= ID:id {: RESULT = id; :};

@@ -1,0 +1,301 @@
+Script started on Mon 03 Apr 2017 07:02:25 PM CDT
+brb0164@faculty% java -cp .:java-cup-11a-runtime.jar TinyCPPPars < test1.cc
+Source Program
+--------------
+
+// test1.cc
+
+#include <iostream>
+
+using namespace std;
+
+int main () {
+  int my_list [100]; 
+  int my_list_tl [100];
+  int r; int h; int i;
+  {
+    r = 2;
+    while (r < 5) {  
+      my_list [r - 2] = r;
+      r = r + 1;
+    }  
+    h = my_list [0];
+    i = r;
+    while (i > 0) {
+      my_list_tl [i - 1] = my_list [i];
+      i = i - 1;
+    }
+  }
+  cout << h; 
+  cout << my_list_tl [0];
+  return 0;
+}
+
+brb0164@faculty% java -cp .:java-cup-11a-runtime.jar TinyCPPPars < test2.cc
+Source Program
+--------------
+
+// test2.cc
+
+// This program tests non-local referencing.
+
+#include <iostream>
+
+using namespace std;
+
+int h;
+
+int area (int x, int y) {
+  int z;
+  z = 2 * (x * y + (x * h) + y * h);
+  return z;
+}
+
+
+int main () {
+  int a; int b; int s;
+  {
+    cin >> a;
+    cin >> b;
+    cin >> h;
+    s = area (a, b);
+  }
+  cout << s;
+  return 0;
+}
+
+brb0164@faculty% java -cp .:java-cup-11a-runtime.jar TinyCPPPars < test3.cc
+Source Program
+--------------
+
+// test3.cc
+
+// This program tests recursive functions.
+
+#include <iostream>
+
+using namespace std;
+
+int facto (int x) {
+  int s;
+  if (x == 1)
+    s = 1;
+  else
+    s = x * facto (x - 1);
+  return s;
+}
+
+int main () {
+  int i; int fac;
+  {
+    cin >> i;
+    fac = facto (i);
+  }
+  cout << fac;
+  return 0;
+}
+
+brb0164@faculty% java -cp .:java-cup-11a-runtime.jar TinyCPPPars < test4.cc
+Source Program
+--------------
+
+// test4.cc
+
+// This program tests arrays passed as parameters.
+
+#include <iostream>
+
+using namespace std;
+
+int f (int a [100], int i) {
+  int x;
+  x = a [i];
+  a [i] = 0;
+  i = 622;
+  return x;
+}
+
+int main ()
+{
+  int b[100];
+  int i; int n;
+  n = 40;
+  i = 0;
+  while (i < 100) {
+    b [i] = i * i;
+    i = i + 1;
+  }
+  cout << n;
+  cout << f (b, n);
+  cout << n;   // n should be unchanged
+  cout << b [n]; // b [n] should be 0
+  return 0;
+}
+
+brb0164@faculty% java -cp .:java-cup-11a-runtime.jar TinyCPPPars < test5.cc
+Source Program
+--------------
+
+// test5.cc
+
+// This program tests class definitions. 
+
+#include <iostream>
+
+using namespace std;
+
+class List {
+
+  public:
+
+  int length;
+  int max;
+  int list [100];
+
+  int initialize (int n) {
+    int flag;
+    int i;
+    max = 100;
+    if (n <= 0 || n > max)
+      flag = 0;
+    else 
+      flag = n;
+    return flag;
+  }
+
+  int getLength () { return length; }
+
+  int nil () { 
+    int nul;
+    if (length > 0)
+      nul = false; 
+    else
+      nul = true;
+    return nul;
+  }
+
+  List cons (int a) {
+    int i;
+    List cons_list;
+    cons_list . length = cons_list . initialize (length + 1);
+    if (cons_list . length > 0)  {
+      cons_list . list [0] = a;
+      i = 0;
+      while (i < length) {
+        cons_list . list [i + 1] = list [i];
+        i = i + 1;
+      }
+    }
+    return cons_list;
+  }
+
+  int head () { 
+    int head;
+    if (length == 0) 
+      head = 0;
+    else
+      head = list [0];
+    return head;
+  }
+
+  List tail () {
+    int i;
+    List tail_list;
+    i = tail_list . initialize (length - 1);
+    while (i > 0) {
+      tail_list = tail_list . cons (list [i]);
+       i = i - 1;
+    }
+    return tail_list;
+  }
+
+  int equals (List list2) {
+    int equals;
+    int i;
+    if (length != list2 . length)
+      equals = false;
+    else {
+      equals = true;
+      i = 0;
+      while (i < length && list [i] == list2 . list [i])
+  i = i + 1;
+      if (i < length) equals = false;
+    }
+    return equals;
+  }
+
+  int print () {
+    int i;
+    cout << 88888;
+    i = 0;
+    while (i < length) {
+      cout << list [i];
+      i = i + 1;
+    }
+    cout << 88888;
+    return length;
+  }
+};
+
+
+int main () {
+  int i; 
+  List l1; List l2;
+  List my_list;
+  cout << (my_list . nil ());
+  i = my_list . initialize (20);
+  i = 10;
+  while (i > 0) {
+    my_list = my_list . cons (i);
+    i = i - 1;
+  }
+  i = my_list . print ();
+  if (my_list . nil ())
+    cout << 1;
+  else
+    cout << 0;
+  cout << (my_list . getLength ());
+  cout << (my_list . head ());
+  i = my_list . tail () . print ();
+  l1 = my_list . cons (0);    
+  l2 = my_list . cons (0);
+  if (l1 . equals (l2))
+    cout << 1;
+  else 
+    cout << 0;
+  if (my_list . equals (l1)) 
+    cout << 1;
+  else 
+    cout << 0;
+  return 0;
+}
+
+brb0164@faculty% java -cp .:java-cup-11a-runtime.jar TinyCPPPars < test6.cc
+Source Program
+--------------
+
+// test6.cc
+
+#include <iostream>
+
+using namespace std;
+
+int main ()
+{
+  int q; int r; int x; int y;
+  cin >> x;
+  cin >> y;
+  q = 0;
+  r = x;
+  while (r >= y) {
+    q = q + 1;
+    r = r - y;
+  }
+  cout << q;
+  cout << r;
+  return 0;
+}
+
+brb0164@faculty% exit
+
+Script done on Mon 03 Apr 2017 07:03:11 PM CDT
