@@ -11,6 +11,7 @@ class SymbolTableEntry {
   private String type;
   private SymbolTable procEnv;
   private String returnType;
+  
 
   public SymbolTableEntry (int cat) { 
     category = cat;
@@ -79,9 +80,9 @@ public class SymbolTable {
     enter (id, new SymbolTableEntry (Category . VARIABLE, type));
   }
 
-  public void enterVariable (String[][] ids){
+  public void enterVariable (String[] ids){
     for (int i=0; i < ids.length; i++) {
-      enterVariable(ids[i][0], ids[i][1]);
+      enterVariable(ids[i], "int");
     }
   }
 
@@ -146,6 +147,26 @@ public class SymbolTable {
     
     printTableHeader(blockName);
 
+    TreeMap <String, SymbolTableEntry> functionList = printSymbolTableEntries();
+    
+    printFunctionSymbolTables(functionList);   
+
+  }
+
+  public void printFunctionSymbolTables(TreeMap <String, SymbolTableEntry> functionList){
+    Iterator <Map . Entry <String, SymbolTableEntry>> procedureIterator = 
+      functionList . entrySet () . iterator ();
+    
+    while (procedureIterator . hasNext ()) {
+      Map . Entry <String, SymbolTableEntry> entry = 
+        procedureIterator . next ();
+      String procedureName = entry . getKey ();
+      SymbolTableEntry idEntry = entry . getValue ();
+      idEntry . procEnv () . print (procedureName);
+    }
+  }
+
+  public TreeMap <String, SymbolTableEntry> printSymbolTableEntries(){
     Iterator <Map . Entry <String, SymbolTableEntry>> envIterator = table . entrySet () . iterator ();
     TreeMap <String, SymbolTableEntry> functionList = new TreeMap <String, SymbolTableEntry> ();
     
@@ -161,18 +182,7 @@ public class SymbolTable {
         functionList . put (id, idEntry);
       }
     }
-    
-    //Print functions symbol tables
-    Iterator <Map . Entry <String, SymbolTableEntry>> procedureIterator = 
-      functionList . entrySet () . iterator ();
-    
-    while (procedureIterator . hasNext ()) {
-      Map . Entry <String, SymbolTableEntry> entry = 
-        procedureIterator . next ();
-      String procedureName = entry . getKey ();
-      SymbolTableEntry idEntry = entry . getValue ();
-      idEntry . procEnv () . print (procedureName);
-    }
+    return functionList;
   }
 
   public static void printSymbolTableEntry(String id, SymbolTableEntry sym){

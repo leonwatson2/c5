@@ -81,10 +81,12 @@ externalDefinition ::= functionDefinition | declaration ;
 
 functionDeclaration ::= 
     simpleTypeName:returnType functionId:id LPAREN argumentDeclarationListOption RPAREN 
-    {: env.enterFunction(id, env, returnType); /* ADD FUNCTION to Symbol Table */ :};
+    {: currentEnv = env; env = new SymbolTable(); currentEnv.enterFunction(id, env, returnType); 
+    /* ADD FUNCTION to Symbol Table */ :};
 
 functionDefinition ::=  functionDeclaration LBRACE 
-    declaratorList statementListOption RETURN expression SEMICOLON RBRACE ;
+    declaratorList statementListOption RETURN expression SEMICOLON RBRACE 
+    {: env = currentEnv; :} ;
 
 declaration ::= classSpecifier SEMICOLON | declarator SEMICOLON ;
 
