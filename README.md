@@ -26,11 +26,11 @@ To run this program you will need cup, jflex, and java compilers.
 
 ### To Compile
 
-1.cup -parser TinyCPPParser -symbols Symbol TinyCPP.cup
-2.jflex -d ./ TinyCPP.jflex 
-3.javac -d ./ -cp .:java-cup-11b-runtime.jar ./TinyCPPLexer.java
-4.javac -d ./ -cp .:java-cup-11b-runtime.jar TinyCPPLex.java
-5.javac -d ./ -cp .:java-cup-11b-runtime.jar TinyCPPPars.java
+1. cup -parser TinyCPPParser -symbols Symbol TinyCPP.cup
+2. jflex -d ./ TinyCPP.jflex 
+3. javac -d ./ -cp .:java-cup-11b-runtime.jar ./TinyCPPLexer.java
+4. javac -d ./ -cp .:java-cup-11b-runtime.jar TinyCPPLex.java
+5. javac -d ./ -cp .:java-cup-11b-runtime.jar TinyCPPPars.java
 
 ### To Run
 
