@@ -1,6 +1,6 @@
-#Symbol Table program
-###Author: Vernon Leon Watson II
-###Date: 4-17-2017
+# Symbol Table program
+### Author: Vernon Leon Watson II
+### Date: 4-17-2017
 
 To run this program you will need cup, jflex, and java compilers.
 
@@ -19,7 +19,7 @@ To run this program you will need cup, jflex, and java compilers.
 ⋅⋅*runTest.sh
 ⋅⋅*makefile
 
-###To Compile
+### To Compile
 
 1.cup -parser TinyCPPParser -symbols Symbol TinyCPP.cup
 2.jflex -d ./ TinyCPP.jflex 
@@ -27,7 +27,7 @@ To run this program you will need cup, jflex, and java compilers.
 4.javac -d ./ -cp .:java-cup-11b-runtime.jar TinyCPPLex.java
 5.javac -d ./ -cp .:java-cup-11b-runtime.jar TinyCPPPars.java
 
-###To Run
+### To Run
 
 java -cp .:java-cup-11b-runtime.jar TinyCPPPars  < testFile.cc
 
