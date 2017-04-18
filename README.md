@@ -10,19 +10,19 @@ the functions and classes in the program.
 To run this program you will need cup, jflex, and java compilers.
 
 ### Files needed.
-*Category.java
-*ErrorMessage.java
-*SymbolTable.java
-*TinyCPP.cup
-*TinyCPP.jflex
-*TinyCPPLex.java
-*TinyCPPPars.java
-*java-cup-11b-runtime.jar
+* Category.java
+* ErrorMessage.java
+* SymbolTable.java
+* TinyCPP.cup
+* TinyCPP.jflex
+* TinyCPPLex.java
+* TinyCPPPars.java
+* java-cup-11b-runtime.jar
 
 ### Optional Files
 
-*runTest.sh
-*makefile
+* runTest.sh
+* makefile
 
 ### To Compile
 
