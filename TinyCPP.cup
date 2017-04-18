@@ -1,6 +1,6 @@
 import java_cup.runtime.*;
 
-action code {: SymbolTable currentEnv, env; :}
+action code {: SymbolTable funcEnv = null, env, classEnv = null; :}
 
 terminal String ID, INTEGER;
 terminal AND, OR, NOT;
@@ -23,6 +23,8 @@ non terminal assignmentStatement;
 non terminal String classId;
 non terminal classMember;
 non terminal classSpecifier;
+non terminal classDeclaration;
+non terminal classDefinition;
 non terminal compoundStatement;
 non terminal declaration;
 non terminal declarator;
@@ -81,12 +83,19 @@ externalDefinition ::= functionDefinition | declaration ;
 
 functionDeclaration ::= 
     simpleTypeName:returnType functionId:id LPAREN argumentDeclarationListOption RPAREN 
-    {: currentEnv = env; env = new SymbolTable(); currentEnv.enterFunction(id, env, returnType); 
-    /* ADD FUNCTION to Symbol Table */ :};
+    {: 
+      funcEnv = new SymbolTable(); 
+      if(classEnv != null){
+          classEnv.enterFunction(id, funcEnv, returnType); 
+      }else{
+          env.enterFunction(id, funcEnv, returnType); 
+      }
+     
+    :};
 
 functionDefinition ::=  functionDeclaration LBRACE 
     declaratorList statementListOption RETURN expression SEMICOLON RBRACE 
-    {: env = currentEnv; :} ;
+    {: funcEnv = null; :} ;
 
 declaration ::= classSpecifier SEMICOLON | declarator SEMICOLON ;
 
@@ -95,7 +104,17 @@ simpleTypeName ::= classId:id {: RESULT = id; :}
 
 declaratorList ::= declaratorList declarator SEMICOLON | ;
 
-declarator ::= simpleTypeName:type objectId:id subscriptDeclarationList {: env.enterVariable(id, type); :};
+declarator ::= simpleTypeName:type objectId:id subscriptDeclarationList 
+                {: 
+                  if(funcEnv != null){ 
+                      funcEnv.enterVariable(id, type);
+                  }
+                  else if(classEnv != null){
+                      classEnv.enterVariable(id, type);
+                  }else{
+                      env.enterVariable(id, type); 
+                  }
+                :};
 
 subscriptDeclarationList ::= subscriptDeclarationList LBRACK INTEGER RBRACK | ;
 
@@ -104,8 +123,19 @@ argumentDeclarationListOption ::= argumentDeclarationList | ;
 argumentDeclarationList ::= argumentDeclarationList COMMA declarator
   | declarator ;
 
-classSpecifier ::= CLASS classId:id LBRACE RBRACE {: env.enterClass(id); :}
-  | CLASS classId:id LBRACE PUBLIC COLON memberList RBRACE{: env.enterClass(id); :};
+classSpecifier ::= classDeclaration classDefinition;
+
+classDeclaration ::= CLASS classId:id LBRACE{: 
+
+  classEnv = new SymbolTable(); 
+    env.enterClass(id, classEnv); 
+  :};
+
+classDefinition ::= PUBLIC COLON memberList RBRACE
+    {: 
+      classEnv = null;
+    :} 
+    | RBRACE;
   
 
 memberList ::= memberList memberDeclaration | memberDeclaration ;

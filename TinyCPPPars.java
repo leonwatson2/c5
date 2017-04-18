@@ -18,7 +18,7 @@ public class TinyCPPPars {
       
       java_cup .runtime . Symbol parserValue = parser . parse ();
       SymbolTable env = (SymbolTable) parserValue . value;
-      env . print ("main");
+      env . print ("Global program");
     }
     catch (Exception e) {
       System . out . println ("Error in invoking parser/lexer");

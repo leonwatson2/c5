@@ -11,7 +11,7 @@ class SymbolTableEntry {
   private String type;
   private SymbolTable procEnv;
   private String returnType;
-  
+
 
   public SymbolTableEntry (int cat) { 
     category = cat;
@@ -21,6 +21,10 @@ class SymbolTableEntry {
   public SymbolTableEntry (int cat, String val) {
     category = cat;
     type = val;
+  }
+  public SymbolTableEntry (int cat, SymbolTable val) {
+    category = cat;
+    procEnv = val;
   }
 
   public SymbolTableEntry (int cat, SymbolTable env, String rType) {
@@ -70,8 +74,8 @@ public class SymbolTable {
   // The enterClass function enters a class id and its value into the 
   // symbol table.
  
-  public void enterClass (String id) { 
-    enter (id, new SymbolTableEntry (Category . CLASS));
+  public void enterClass (String id, SymbolTable sym) { 
+    enter (id, new SymbolTableEntry (Category . CLASS, sym));
   }
 
   // The enterVariable function enters a variable id into the symbol table.
@@ -80,11 +84,6 @@ public class SymbolTable {
     enter (id, new SymbolTableEntry (Category . VARIABLE, type));
   }
 
-  public void enterVariable (String[] ids){
-    for (int i=0; i < ids.length; i++) {
-      enterVariable(ids[i], "int");
-    }
-  }
 
   // The enterFunction function enters a function id, its local symbol table and 
   // return type in to the symbol table.
@@ -93,16 +92,13 @@ public class SymbolTable {
     enter (id, new SymbolTableEntry (Category . FUNCTION, env, returnType));
   }
 
-  public void enterFunction(String[] ids, SymbolTable[] envs){
-    for (int i=0; i < ids.length; i++) {
-      enterFunction(ids[i], envs[i], "");
-    }
-  }
+
+  //Lookups an identifier in the table, returns the SymbolTableEntry of that Identifier
 
   public SymbolTableEntry lookup(String id){
     SymbolTableEntry item  = table.get(id);
       if(item == null){
-        Iterator <Map . Entry <String, SymbolTableEntry>> envIterator = getFunctions().entrySet().iterator();
+        Iterator <Map . Entry <String, SymbolTableEntry>> envIterator = getFunctionsList().entrySet().iterator();
         while (envIterator . hasNext ()) {
           Map . Entry <String, SymbolTableEntry> entry = envIterator . next ();
           SymbolTableEntry value = entry.getValue();
@@ -117,8 +113,9 @@ public class SymbolTable {
         
 
   }
+  //returns the TreeMap for all functions and Classes in the current table
 
-  public TreeMap <String, SymbolTableEntry> getFunctions(){
+  public TreeMap <String, SymbolTableEntry> getFunctionsList(){
     Iterator <Map . Entry <String, SymbolTableEntry>> envIterator = table . entrySet () . iterator ();
     TreeMap <String, SymbolTableEntry> functionList = new TreeMap <String, SymbolTableEntry> ();
 
@@ -127,8 +124,12 @@ public class SymbolTable {
       String id = entry . getKey ();
       SymbolTableEntry idEntry = entry . getValue ();
       
-      if (idEntry . category () == Category . FUNCTION)
+      if (idEntry . category () == Category . FUNCTION 
+          || idEntry . category () == Category . CLASS){
         functionList . put (id, idEntry);
+      }
+
+      
     }
 
     return functionList;
@@ -145,28 +146,37 @@ public class SymbolTable {
 
   public void print (String blockName) {
     
-    printTableHeader(blockName);
+    if(table.size() > 0){
 
-    TreeMap <String, SymbolTableEntry> functionList = printSymbolTableEntries();
-    
-    printFunctionSymbolTables(functionList);   
+      printTableHeader(blockName);
+
+      printSymbolTableEntries();
+      
+      printFunctionSymbolTables();   
+    }
 
   }
 
-  public void printFunctionSymbolTables(TreeMap <String, SymbolTableEntry> functionList){
-    Iterator <Map . Entry <String, SymbolTableEntry>> procedureIterator = 
+  // Prints the symbol table for all the functions and classes
+
+  public void printFunctionSymbolTables(){
+    TreeMap <String, SymbolTableEntry> functionList = getFunctionsList();
+    Iterator <Map . Entry <String, SymbolTableEntry>> functionIterator = 
       functionList . entrySet () . iterator ();
     
-    while (procedureIterator . hasNext ()) {
-      Map . Entry <String, SymbolTableEntry> entry = 
-        procedureIterator . next ();
-      String procedureName = entry . getKey ();
+    while (functionIterator . hasNext ()) {
+      Map . Entry <String, SymbolTableEntry> entry = functionIterator . next ();
+
+      String functionName = entry . getKey ();
       SymbolTableEntry idEntry = entry . getValue ();
-      idEntry . procEnv () . print (procedureName);
+      idEntry . procEnv () . print (functionName);
     }
   }
 
-  public TreeMap <String, SymbolTableEntry> printSymbolTableEntries(){
+  //Prints all SymbolTableEntries in the table.
+
+
+  public void printSymbolTableEntries(){
     Iterator <Map . Entry <String, SymbolTableEntry>> envIterator = table . entrySet () . iterator ();
     TreeMap <String, SymbolTableEntry> functionList = new TreeMap <String, SymbolTableEntry> ();
     
@@ -177,13 +187,11 @@ public class SymbolTable {
       
       printSymbolTableEntry(id, idEntry);
 
-      if (idEntry . category () == Category . FUNCTION){
-
-        functionList . put (id, idEntry);
-      }
+      
     }
-    return functionList;
   }
+
+  //Prints a single Symbol Table Entry.
 
   public static void printSymbolTableEntry(String id, SymbolTableEntry sym){
 
@@ -213,6 +221,7 @@ public class SymbolTable {
 
   }
 
+  //Print the header for the Symbol Table
   public static void printTableHeader(String blockName){
     System . out . println ("");
     System . out . println ("Identifier Table for " + blockName);

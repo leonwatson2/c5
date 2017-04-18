@@ -1,6 +1,6 @@
-// TinyCC class 
+// TinyCCPLex class 
 // This class is a TinyCC lexical analyzer which reads a 
-// TinyCC source program and outputs the list of tokens 
+// TinyCCPLex source program and outputs the list of tokens 
 // comprising that program.  
 
 import java_cup.runtime.ComplexSymbolFactory; 
