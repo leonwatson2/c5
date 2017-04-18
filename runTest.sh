@@ -14,7 +14,7 @@ if [ -f $mainFile".class" ];then
 		if [ $# -eq 0 ];then
 			echo "Running all tests in the '"$testDir"' directory."
 			sleep 2
-			./runTest $testDir/*
+			./runTest.sh $testDir/*
 		else
 		for i in $@; do
 			if [ -f $i ];then
